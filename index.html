@@ -1,1 +1,538 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Цифровой каталог МАФ</title>
+<style>
+  * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Arial, sans-serif;}
+  body {background:#f4f6f8; color:#333;}
+  header {background:#2c3e50; color:#fff; text-align:center; padding:30px 15px;}
+  header h1 {font-size:2rem; margin-bottom:10px;}
+  header p {font-size:1rem; opacity:0.9;}
+  nav a {color:#fff; margin:0 10px; text-decoration:none; font-weight:600;}
+  nav a:hover {text-decoration:underline;}
 
+  .filters {
+    display:flex; flex-wrap:wrap; justify-content:center; gap:15px;
+    background:#fff; padding:15px; box-shadow:0 2px 6px rgba(0,0,0,0.1); margin:20px auto;
+    border-radius:10px; max-width:1000px;
+  }
+  .filter label {margin-right:8px; font-weight:600;}
+  .filter select {
+    padding:5px 10px; border-radius:5px; border:1px solid #ccc; background:#f9f9f9;
+  }
+
+  .catalog {
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap:20px;
+    padding:20px;
+    max-width:1200px;
+    margin:auto;
+  }
+
+  .card {
+    background:#fff; border-radius:10px; overflow:hidden;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+    transition:transform 0.2s; cursor:pointer;
+  }
+  .card:hover {transform:translateY(-4px);}
+  .card img {width:100%; height:160px; object-fit:cover;}
+  .card-content {padding:15px;}
+  .card-content h3 {font-size:1.2rem; margin-bottom:8px; color:#2c3e50;}
+  .card-content p {font-size:0.9rem; margin-bottom:4px; line-height:1.4;}
+
+  footer {
+    background:#2c3e50; color:#fff; text-align:center;
+    padding:15px; margin-top:40px; font-size:0.9rem;
+  }
+
+  /* Модальное окно */
+  .modal {
+    display:none; position:fixed; z-index:1000; left:0; top:0;
+    width:100%; height:100%; overflow:auto; background:rgba(0,0,0,0.5);
+  }
+  .modal-content {
+    background:#fff; margin:5% auto; padding:20px; border-radius:10px;
+    width:90%; max-width:600px; position:relative;
+  }
+  .close {
+    position:absolute; top:10px; right:15px; font-size:1.5rem; font-weight:bold;
+    color:#333; cursor:pointer;
+  }
+  .modal-img {width:100%; height:auto; margin-bottom:15px; border-radius:8px; display:none;}
+  .modal h3 {color:#2c3e50; margin-bottom:10px;}
+</style>
+
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+</head>
+<body>
+
+<header>
+  <h1>Цифровой каталог МАФ</h1>
+  <p>Единая база малых архитектурных форм: от производителей России для городов и парков</p>
+  <nav>
+    <a href="#catalog">Каталог</a>
+    <a href="#footer">Контакты</a>
+  </nav>
+</header>
+
+<section class="filters">
+  <div class="filter">
+    <label for="category">Категория:</label>
+    <select id="category">
+      <option value="">Все</option>
+      <option value="Скамейки">Скамейки</option>
+      <option value="Урны">Урны</option>
+      <option value="Киоски">Киоски</option>
+      <option value="Указатели">Указатели</option>
+      <option value="Ограждения">Ограждения</option>
+	  <option value="Велопарковки">Велопарковки</option>
+      <option value="Освещение">Освещение</option>
+    </select>
+  </div>
+  <div class="filter">
+    <label for="manufacturer">Производитель:</label>
+    <select id="manufacturer">
+      <option value="">Все</option>
+      <option value="EcoStreet">EcoStreet</option>
+      <option value="UrbanDesign">UrbanDesign</option>
+      <option value="ParkLine">ParkLine</option>
+	  <option value="Парки_Великого_Новгорода">Парки Великого Новгорода</option>
+    </select>
+  </div>
+  <div class="filter">
+    <label for="size">Размер:</label>
+    <select id="size">
+      <option value="">Все</option>
+      <option value="Малые">Малые</option>
+      <option value="Средние">Средние</option>
+      <option value="Большие">Большие</option>
+    </select>
+  </div>
+</section>
+
+<section id="catalog" class="catalog">
+
+<!-- === СКАМЕЙКИ === -->
+<div class="card" data-category="Скамейки" data-manufacturer="Парки_Великого_Новгорода" data-size="Средние" onclick="openModal('Скамья Классик', 'Парки Великого Новгорода', 'Универсальная скамья из парка', 'Металл, дерево. Размер: 150×50×80 см. Эргономичная форма, устойчива к влаге и легко чистится.', 'images/Skamya_1.png')">
+  <img src="images/Skamya_1.png" alt="Скамья Классик">
+  <div class="card-content">
+    <h3>Скамья Классик</h3>
+    <p><strong>Производитель:</strong> Парки Великого Новгорода</p>
+    <p>Универсальная скамья из парка</p>
+  </div>
+</div>
+
+<div class="card" 
+  data-category="Скамейки" 
+  data-manufacturer="Парки_Великого_Новгорода" 
+  data-size="Средние"
+  onclick="openModal(
+    'Скамья Река',
+    'Парки Великого Новгорода',
+    'Парковая скамья с волнообразным дизайном',
+    'Металл, дерево. Размер: 150×50×80 см. Эргономичная форма, устойчива к влаге и легко чистится.',
+    'models/reka.glb'
+  )"
+>
+  <img src="images/Skamya_2.png" alt="Скамья Река">
+  <div class="card-content">
+    <h3>Скамья Река</h3>
+    <p><strong>Производитель:</strong> Парки Великого Новгорода</p>
+    <p>Парковая скамья с волнообразным дизайном</p>
+  </div>
+</div>
+
+<!-- НОВЫЕ СКАМЬИ 3D -->
+<div class="card" data-category="Скамейки" data-manufacturer="Парки_Великого_Новгорода" data-size="Средние" onclick="openModal('Скамья Волна', 'Парки Великого Новгорода', 'Современная скамья с плавными линиями', 'Металл, дерево. Размер: 160×50×85 см. Изогнутый дизайн создает ощущение движения.', 'models/Skamya_5.glb')">
+  <img src="images/Skamya_2.png" alt="Скамья Волна">
+  <div class="card-content">
+    <h3>Скамья Волна</h3>
+    <p><strong>Производитель:</strong> Парки Великого Новгорода</p>
+    <p>Современная скамья с плавными линиями</p>
+  </div>
+</div>
+
+<div class="card" data-category="Скамейки" data-manufacturer="Парки_Великого_Новгорода" data-size="Большие" onclick="openModal('Скамья Арка', 'Парки Великого Новгорода', 'Монументальная парковая скамья', 'Металл, дерево. Размер: 180×60×90 см. Арочная конструкция, подходит для центральных аллей парков.', 'models/Skamya_6.glb')">
+  <img src="images/Skamya_2.png" alt="Скамья Арка">
+  <div class="card-content">
+    <h3>Скамья Арка</h3>
+    <p><strong>Производитель:</strong> Парки Великого Новгорода</p>
+    <p>Монументальная парковая скамья</p>
+  </div>
+</div>
+
+<div class="card" data-category="Скамейки" data-manufacturer="Парки_Великого_Новгорода" data-size="Малые" onclick="openModal('Скамья Мини', 'Парки Великого Новгорода', 'Компактная скамья для небольших пространств', 'Металл, дерево. Размер: 120×40×75 см. Идеальна для маленьких скверов и дворов.', 'models/Skamya_7.glb')">
+  <img src="images/Skamya_2.png" alt="Скамья Мини">
+  <div class="card-content">
+    <h3>Скамья Мини</h3>
+    <p><strong>Производитель:</strong> Парки Великого Новгорода</p>
+    <p>Компактная скамья для небольших пространств</p>
+  </div>
+</div>
+
+<div class="card" data-category="Скамейки" data-manufacturer="Парки_Великого_Новгорода" data-size="Средние" onclick="openModal('Скамья Модерн', 'Парки Великого Новгорода', 'Скамья в стиле модерн с кованными элементами', 'Металл, дерево. Размер: 150×50×80 см. Декоративные кованные элементы, элегантный дизайн.', 'models/Skamya_8.glb')">
+  <img src="images/Skamya_2.png" alt="Скамья Модерн">
+  <div class="card-content">
+    <h3>Скамья Модерн</h3>
+    <p><strong>Производитель:</strong> Парки Великого Новгорода</p>
+    <p>Скамья в стиле модерн с кованными элементами</p>
+  </div>
+</div>
+
+<div class="card" data-category="Скамейки" data-manufacturer="Парки_Великого_Новгорода" data-size="Большие" onclick="openModal('Скамья Гранд', 'Парки Великого Новгорода', 'Большая скамья для общественных пространств', 'Металл, дерево. Размер: 200×60×85 см. Вместительная, прочная конструкция для площадей.', 'models/Skamya_9.glb')">
+  <img src="images/Skamya_2.png" alt="Скамья Гранд">
+  <div class="card-content">
+    <h3>Скамья Гранд</h3>
+    <p><strong>Производитель:</strong> Парки Великого Новгорода</p>
+    <p>Большая скамья для общественных пространств</p>
+  </div>
+</div>
+
+<div class="card" data-category="Указатели" data-manufacturer="Парки_Великого_Новгорода" data-size="Средние" onclick="openModal('Информационный стенд История', 'Парки Великого Новгорода', 'Стильный информационный указатель', 'Металл. Размер: 150×200×10 см. Эргономичная форма, устойчива к влаге и легко чистится.', 'images/Stend_1.png')">
+  <img src="images/Stend_1.png" alt="Информационный стенд История">
+  <div class="card-content">
+    <h3>Информационный стенд История</h3>
+    <p><strong>Производитель:</strong> Парки Великого Новгорода</p>
+    <p>Стенд для информации</p>
+  </div>
+</div>
+
+<!-- НОВЫЙ ИНФОРМАЦИОННЫЙ СТЕНД 3D -->
+<div class="card" data-category="Указатели" data-manufacturer="Парки_Великого_Новгорода" data-size="Большие" onclick="openModal('Инфостенд Современный', 'Парки Великого Новгорода', 'Современный информационный стенд с подсветкой', 'Металл, стекло. Размер: 180×120×250 см. LED-подсветка, защита от вандализма, система крепления плакатов.', 'models/Inform_stend_1.glb')">
+  <img src="images/Stend_1.png" alt="Инфостенд Современный">
+  <div class="card-content">
+    <h3>Инфостенд Современный</h3>
+    <p><strong>Производитель:</strong> Парки Великого Новгорода</p>
+    <p>Современный информационный стенд с подсветкой</p>
+  </div>
+</div>
+
+<!-- === ОСВЕЩЕНИЕ === -->
+<div class="card" data-category="Освещение" data-manufacturer="Парки_Великого_Новгорода" data-size="Средние" onclick="openModal('Фонарь Парковый', 'Парки Великого Новгорода', 'Классический парковый фонарь', 'Металл, стекло. Высота: 300 см. LED-освещение, энергоэффективность, стильный дизайн.', 'models/Fonar_1.glb')">
+  <img src="images/Stend_1.png" alt="Фонарь Парковый">
+  <div class="card-content">
+    <h3>Фонарь Парковый</h3>
+    <p><strong>Производитель:</strong> Парки Великого Новгорода</p>
+    <p>Классический парковый фонарь</p>
+  </div>
+</div>
+
+<!-- === УРНЫ === -->
+<!-- НОВЫЕ УРНЫ 3D -->
+<div class="card" data-category="Урны" data-manufacturer="Парки_Великого_Новгорода" data-size="Малые" onclick="openModal('Урна Стандарт', 'Парки Великого Новгорода', 'Базовая урна для парков и скверов', 'Металл. Размер: 40×40×80 см. Простая конструкция, легкая очистка, устойчивое основание.', 'models/Uma_1.glb')">
+  <img src="images/5.jpg" alt="Урна Стандарт">
+  <div class="card-content">
+    <h3>Урна Стандарт</h3>
+    <p><strong>Производитель:</strong> Парки Великого Новгорода</p>
+    <p>Базовая урна для парков и скверов</p>
+  </div>
+</div>
+
+<div class="card" data-category="Урны" data-manufacturer="Парки_Великого_Новгорода" data-size="Средние" onclick="openModal('Урна Сортировка', 'Парки Великого Новгорода', 'Урна для раздельного сбора отходов', 'Металл, пластик. Размер: 60×50×90 см. 3 отделения для разных видов отходов, понятная маркировка.', 'models/Uma_2.glb')">
+  <img src="images/5.jpg" alt="Урна Сортировка">
+  <div class="card-content">
+    <h3>Урна Сортировка</h3>
+    <p><strong>Производитель:</strong> Парки Великого Новгорода</p>
+    <p>Урна для раздельного сбора отходов</p>
+  </div>
+</div>
+
+<div class="card" data-category="Урны" data-manufacturer="Парки_Великого_Новгорода" data-size="Большие" onclick="openModal('Урна Большая', 'Парки Великого Новгорода', 'Вместительная урна для общественных мест', 'Металл. Размер: 50×50×100 см. Большой объем, педальный механизм открытия, антивандальное исполнение.', 'models/Uma_3.glb')">
+  <img src="images/5.jpg" alt="Урна Большая">
+  <div class="card-content">
+    <h3>Урна Большая</h3>
+    <p><strong>Производитель:</strong> Парки Великого Новгорода</p>
+    <p>Вместительная урна для общественных мест</p>
+  </div>
+</div>
+
+<!-- СТАРЫЕ УРНЫ -->
+<div class="card" data-category="Урны" data-manufacturer="UrbanDesign" data-size="Малые" onclick="openModal('МеталБин', 'UrbanDesign', 'Урна для улиц и парков', 'Металл. Размер: 40×40×80 см. Прочная конструкция, легкая очистка, удобна для скверов и пешеходных зон.', 'images/5.jpg')">
+  <img src="images/5.jpg" alt="МеталБин">
+  <div class="card-content">
+    <h3>МеталБин</h3>
+    <p><strong>Производитель:</strong> UrbanDesign</p>
+    <p>Урна для улиц и парков</p>
+  </div>
+</div>
+
+<div class="card" data-category="Урны" data-manufacturer="EcoStreet" data-size="Средние" onclick="openModal('ЭкоТреш', 'EcoStreet', 'Урна с сортировкой отходов', 'Металл+Пластик. Размер: 50×50×90 см. Позволяет сортировать мусор, устойчив к коррозии, легко чистится.', 'images/6.jpg')">
+  <img src="images/6.jpg" alt="ЭкоТреш">
+  <div class="card-content">
+    <h3>ЭкоТреш</h3>
+    <p><strong>Производитель:</strong> EcoStreet</p>
+    <p>Урна с сортировкой отходов</p>
+  </div>
+</div>
+
+<div class="card" data-category="Урны" data-manufacturer="ParkLine" data-size="Средние" onclick="openModal('ПаркКонтейнер', 'ParkLine', 'Классическая парковая урна', 'Дерево+Металл. Размер: 45×45×85 см. Эстетичная конструкция, легко очищается, подходит для парков и скверов.', 'images/7.jpg')">
+  <img src="images/7.jpg" alt="ПаркКонтейнер">
+  <div class="card-content">
+    <h3>ПаркКонтейнер</h3>
+    <p><strong>Производитель:</strong> ParkLine</p>
+    <p>Классическая парковая урна</p>
+  </div>
+</div>
+
+<div class="card" data-category="Урны" data-manufacturer="UrbanDesign" data-size="Малые" onclick="openModal('МиниВин', 'UrbanDesign', 'Маленькая урна для скверов', 'Металл. Размер: 35×35×70 см. Компактная, легкая в обслуживании, идеально подходит для маленьких зеленых зон.', 'images/8.jpg')">
+  <img src="images/8.jpg" alt="МиниВин">
+  <div class="card-content">
+    <h3>МиниВин</h3>
+    <p><strong>Производитель:</strong> UrbanDesign</p>
+    <p>Маленькая урна для скверов</p>
+  </div>
+</div>
+
+<!-- СТАРЫЕ СКАМЬИ ОТ ДРУГИХ ПРОИЗВОДИТЕЛЕЙ -->
+<div class="card" data-category="Скамейки" data-manufacturer="EcoStreet" data-size="Средние" onclick="openModal('ГринСит', 'EcoStreet', 'Современная скамейка для улиц', 'Металл, дерево. Размер: 150×50×80 см. Эргономичная форма, устойчива к влаге и легко чистится.', 'images/1.jpg')">
+  <img src="images/1.jpg" alt="ГринСит">
+  <div class="card-content">
+    <h3>ГринСит</h3>
+    <p><strong>Производитель:</strong> EcoStreet</p>
+    <p>Современная скамейка для улиц</p>
+  </div>
+</div>
+
+<div class="card" data-category="Скамейки" data-manufacturer="UrbanDesign" data-size="Средние" onclick="openModal('СитиФлоу', 'UrbanDesign', 'Минималистичная парковая скамья', 'Сталь. Размер: 140×45×75 см. Изогнутый дизайн, подходит для современных городских парков.', 'images/2.jpg')">
+  <img src="images/2.jpg" alt="СитиФлоу">
+  <div class="card-content">
+    <h3>СитиФлоу</h3>
+    <p><strong>Производитель:</strong> UrbanDesign</p>
+    <p>Минималистичная парковая скамья</p>
+  </div>
+</div>
+
+<div class="card" data-category="Скамейки" data-manufacturer="ParkLine" data-size="Большие" onclick="openModal('ПаркКласс', 'ParkLine', 'Классическая деревянная скамейка', 'Дерево, чугун. Размер: 160×55×80 см. Прочные материалы, выдерживают большие нагрузки, подходят для исторических парков.', 'images/3.jpg')">
+  <img src="images/3.jpg" alt="ПаркКласс">
+  <div class="card-content">
+    <h3>ПаркКласс</h3>
+    <p><strong>Производитель:</strong> ParkLine</p>
+    <p>Классическая деревянная скамейка</p>
+  </div>
+</div>
+
+<div class="card" data-category="Скамейки" data-manufacturer="EcoStreet" data-size="Средние" onclick="openModal('ЭкоЛежанка', 'EcoStreet', 'Экологичная скамейка', 'ReWood+Сталь. Размер: 150×50×80 см. Сделана из переработанных материалов, устойчива к осадкам, безопасна для детей.', 'images/4.jpg')">
+  <img src="images/4.jpg" alt="ЭкоЛежанка">
+  <div class="card-content">
+    <h3>ЭкоЛежанка</h3>
+    <p><strong>Производитель:</strong> EcoStreet</p>
+    <p>Экологичная скамейка</p>
+  </div>
+</div>
+
+<!-- === КИОСКИ === -->
+<div class="card" data-category="Киоски" data-manufacturer="EcoStreet" data-size="Большие" onclick="openModal('ИнфоПавильон', 'EcoStreet', 'Информационный киоск', 'Металл+Стекло. Размер: 200×120×250 см. Просторный павильон для туристических и информационных целей, устойчив к погодным условиям.', 'images/9.jpg')">
+  <img src="images/9.jpg" alt="ИнфоПавильон">
+  <div class="card-content">
+    <h3>ИнфоПавильон</h3>
+    <p><strong>Производитель:</strong> EcoStreet</p>
+    <p>Информационный киоск</p>
+  </div>
+</div>
+
+<div class="card" data-category="Киоски" data-manufacturer="UrbanDesign" data-size="Большие" onclick="openModal('СувенирБокс', 'UrbanDesign', 'Мини-киоск для сувениров', 'Металл+ПВХ. Размер: 180×100×220 см. Компактная конструкция, подходит для сувенирной торговли на улицах и в парках.', 'images/10.jpg')">
+  <img src="images/10.jpg" alt="СувенирБокс">
+  <div class="card-content">
+    <h3>СувенирБокс</h3>
+    <p><strong>Производитель:</strong> UrbanDesign</p>
+    <p>Мини-киоск для сувениров</p>
+  </div>
+</div>
+
+<div class="card" data-category="Киоски" data-manufacturer="ParkLine" data-size="Большие" onclick="openModal('ПаркШоп', 'ParkLine', 'Классический киоск для парка', 'Дерево+Стекло. Размер: 200×120×240 см. Традиционный дизайн, выдерживает большие нагрузки, подходит для парков и городских зон.', 'images/11.jpg')">
+  <img src="images/11.jpg" alt="ПаркШоп">
+  <div class="card-content">
+    <h3>ПаркШоп</h3>
+    <p><strong>Производитель:</strong> ParkLine</p>
+    <p>Классический киоск для парка</p>
+  </div>
+</div>
+
+<div class="card" data-category="Киоски" data-manufacturer="EcoStreet" data-size="Большие" onclick="openModal('МодулСтанция', 'EcoStreet', 'Модульный киоск под любые задачи', 'Металл+ДСП. Размер: 190×110×230 см. Гибкая конструкция, легко адаптируется под разные нужды.', 'images/12.jpg')">
+  <img src="images/12.jpg" alt="МодулСтанция">
+  <div class="card-content">
+    <h3>МодулСтанция</h3>
+    <p><strong>Производитель:</strong> EcoStreet</p>
+    <p>Модульный киоск под любые задачи</p>
+  </div>
+</div>
+
+<!-- === УКАЗАТЕЛИ === -->
+<div class="card" data-category="Указатели" data-manufacturer="UrbanDesign" data-size="Большие" onclick="openModal('Навигатор', 'UrbanDesign', 'Указатель направления для улиц', 'Металл. Размер: 250 см. Высокая видимость, устойчив к погодным условиям, помогает ориентироваться в городской среде.', 'images/13.jpg')">
+  <img src="images/13.jpg" alt="Навигатор">
+  <div class="card-content">
+    <h3>Навигатор</h3>
+    <p><strong>Производитель:</strong> UrbanDesign</p>
+    <p>Указатель направления для улиц</p>
+  </div>
+</div>
+
+<div class="card" data-category="Указатели" data-manufacturer="ParkLine" data-size="Средние" onclick="openModal('ПаркСтоп', 'ParkLine', 'Парковый указатель', 'Дерево+Металл. Размер: 200 см. Эстетичный дизайн, подходит для парков, легко читается.', 'images/14.jpg')">
+  <img src="images/14.jpg" alt="ПаркСтоп">
+  <div class="card-content">
+    <h3>ПаркСтоп</h3>
+    <p><strong>Производитель:</strong> ParkLine</p>
+    <p>Парковый указатель</p>
+  </div>
+</div>
+
+<div class="card" data-category="Указатели" data-manufacturer="EcoStreet" data-size="Средние" onclick="openModal('ЭкоМаркер', 'EcoStreet', 'Экологичный указатель', 'Металл+Дерево. Размер: 220 см. Устойчив к влаге, выполнен из экологичных материалов.', 'images/15.jpg')">
+  <img src="images/15.jpg" alt="ЭкоМаркер">
+  <div class="card-content">
+    <h3>ЭкоМаркер</h3>
+    <p><strong>Производитель:</strong> EcoStreet</p>
+    <p>Экологичный указатель</p>
+  </div>
+</div>
+
+<div class="card" data-category="Указатели" data-manufacturer="UrbanDesign" data-size="Средние" onclick="openModal('ГородСигн', 'UrbanDesign', 'Минималистичный указатель', 'Алюминий. Размер: 180 см. Легкий, современный дизайн, подходит для городских улиц.', 'images/16.jpg')">
+  <img src="images/16.jpg" alt="ГородСигн">
+  <div class="card-content">
+    <h3>ГородСигн</h3>
+    <p><strong>Производитель:</strong> UrbanDesign</p>
+    <p>Минималистичный указатель</p>
+  </div>
+</div>
+
+<!-- === ОГРАЖДЕНИЯ === -->
+<div class="card" data-category="Ограждения" data-manufacturer="UrbanDesign" data-size="Средние" onclick="openModal('МеталлГрид', 'UrbanDesign', 'Современное металлическое ограждение', 'Металл. Размер: 100×100 см. Прочный каркас, современный дизайн, легко монтируется.', 'images/17.jpg')">
+  <img src="images/17.jpg" alt="МеталлГрид">
+  <div class="card-content">
+    <h3>МеталлГрид</h3>
+    <p><strong>Производитель:</strong> UrbanDesign</p>
+    <p>Современное металлическое ограждение</p>
+  </div>
+</div>
+
+<div class="card" data-category="Ограждения" data-manufacturer="ParkLine" data-size="Средние" onclick="openModal('ПаркФенс', 'ParkLine', 'Классическое парковое ограждение', 'Чугун+Дерево. Размер: 90×90 см. Эстетичный дизайн, устойчив к внешним воздействиям, подходит для парков.', 'images/18.jpg')">
+  <img src="images/18.jpg" alt="ПаркФенс">
+  <div class="card-content">
+    <h3>ПаркФенс</h3>
+    <p><strong>Производитель:</strong> ParkLine</p>
+    <p>Классическое парковое ограждение</p>
+  </div>
+</div>
+
+<div class="card" data-category="Ограждения" data-manufacturer="EcoStreet" data-size="Средние" onclick="openModal('ЭкоФенс', 'EcoStreet', 'Экологичное ограждение', 'Дерево+Металл. Размер: 100×100 см. Из переработанных материалов, безопасно для детей, устойчиво к погоде.', 'images/19.jpg')">
+  <img src="images/19.jpg" alt="ЭкоФенс">
+  <div class="card-content">
+    <h3>ЭкоФенс</h3>
+    <p><strong>Производитель:</strong> EcoStreet</p>
+    <p>Экологичное ограждение</p>
+  </div>
+</div>
+
+<div class="card" data-category="Ограждения" data-manufacturer="UrbanDesign" data-size="Малые" onclick="openModal('МиниФенс', 'UrbanDesign', 'Малое ограждение для скверов', 'Алюминий. Размер: 80×80 см. Легкое и мобильное, подходит для малых парков и скверов.', 'images/20.jpg')">
+  <img src="images/20.jpg" alt="МиниФенс">
+  <div class="card-content">
+    <h3>МиниФенс</h3>
+    <p><strong>Производитель:</strong> UrbanDesign</p>
+    <p>Малое ограждение для скверов</p>
+  </div>
+</div>
+
+<div class="card" data-category="Велопарковки" data-manufacturer="Парки_Великого_Новгорода" data-size="Средние" onclick="openModal('Велостойка Класс', 'Парки Великого Новгорода', 'Малое ограждение для скверов', 'Металл. Размер: 120х50х80 см. Легкое и мобильное, подходит для малых парков и скверов.', 'images/veloparkovka.png')">
+	<img src="images/veloparkovka.png" alt="Велостойка Класс">
+	<div class="card-content">
+    <h3>Велостойка «Класс»</h3>
+    <p><strong>Производитель:</strong> Парки Великого Новгорода</p>
+    <p>Велостойка</p>
+  </div>
+</div>
+
+</section>
+
+<section id="manufacturers-section" style="text-align:center; margin:40px 0;">
+  <h2 style="font-size:1.2rem; color:#2c3e50; margin-bottom:20px;">Производители</h2>
+  <div id="manufacturers" style="display:flex; justify-content:center; gap:30px; align-items:center; flex-wrap:nowrap;">
+    <img src="images/21.jpg" alt="EcoStreet" style="height:120px; width:auto;">
+    <img src="images/22.jpg" alt="UrbanDesign" style="height:120px; width:auto;">
+    <img src="images/23.jpg" alt="ParkLine" style="height:120px; width:auto;">
+    <img src="images/24.jpg" alt="ParkLine" style="height:120px; width:auto;">
+  </div>
+</section>
+
+<!-- Модальное окно -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <img id="modal-img" class="modal-img" src="" alt="Изображение">
+    <model-viewer id="modal-model" src="" alt="3D модель" 
+      camera-controls auto-rotate 
+      style="width:100%; height:400px; background:#f4f4f4; border-radius:10px; display:none;">
+    </model-viewer>
+    <h3 id="modal-title"></h3>
+    <p><strong>Производитель:</strong> <span id="modal-manufacturer"></span></p>
+    <p id="modal-short"></p>
+    <p id="modal-long"></p>
+  </div>
+</div>
+
+<footer id="footer">
+  <p>© 2025 Цифровой каталог МАФ. Все права защищены.</p>
+</footer>
+
+<script>
+const categoryFilter = document.getElementById('category');
+const manufacturerFilter = document.getElementById('manufacturer');
+const sizeFilter = document.getElementById('size');
+const cards = document.querySelectorAll('.card');
+
+function filterCards() {
+  const cat = categoryFilter.value;
+  const man = manufacturerFilter.value;
+  const size = sizeFilter.value;
+
+  cards.forEach(card => {
+    const matchCat = !cat || card.dataset.category === cat;
+    const matchMan = !man || card.dataset.manufacturer === man;
+    const matchSize = !size || card.dataset.size === size;
+
+    card.style.display = (matchCat && matchMan && matchSize) ? 'block' : 'none';
+  });
+}
+
+categoryFilter.addEventListener('change', filterCards);
+manufacturerFilter.addEventListener('change', filterCards);
+sizeFilter.addEventListener('change', filterCards);
+
+function openModal(title, manufacturer, shortDesc, longDesc, src) {
+  document.getElementById('modal-title').innerText = title;
+  document.getElementById('modal-manufacturer').innerText = manufacturer;
+  document.getElementById('modal-short').innerText = shortDesc;
+  document.getElementById('modal-long').innerText = longDesc;
+
+  const model = document.getElementById('modal-model');
+  const img = document.getElementById('modal-img');
+
+  const isModel = src.toLowerCase().endsWith(".glb");
+
+  if (isModel) {
+    model.style.display = "block";
+    img.style.display = "none";
+    model.src = src;
+  } else {
+    img.style.display = "block";
+    model.style.display = "none";
+    img.src = src;
+  }
+
+  document.getElementById('modal').style.display = 'block';
+}
+
+function closeModal() {
+  document.getElementById('modal').style.display = 'none';
+}
+
+window.onclick = function(event) {
+  const modal = document.getElementById('modal');
+  if (event.target === modal) closeModal();
+}
+</script>
+
+</body>
+</html>
